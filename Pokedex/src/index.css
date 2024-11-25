@@ -1,5 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.press-start-2p-regular {
+  font-family: "Press Start 2P", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Press Start 2P", system-ui;
   line-height: 1.5;
   font-weight: 400;
 
@@ -13,7 +24,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
+/* a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
@@ -65,4 +76,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */
