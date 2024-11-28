@@ -1,29 +1,49 @@
-import React, { useContext } from "react";
+// PokeList.jsx
+import React, { useState, useContext, useEffect } from "react";
 import { PokedexContext } from "../../context/Context";
 import PokeCard from "./Pokecard/PokeCard";
 
 function PokeList() {
   const { loading, pokemons } = useContext(PokedexContext);
-  console.log(pokemons);
+  const [visiblePokemons, setVisiblePokemons] = useState(20);
+
+  const showMorePokemons = () => {
+    setVisiblePokemons((prevCount) =>
+      Math.min(prevCount + 20, pokemons.length)
+    );
+  };
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  if (!pokemons || pokemons.length === 0) {
+    return <div>No Pokémon found</div>;
+  }
+
   return (
     <>
       <div className="flex justify-center m-5">
-        <div className="text-xl font-bold">POKEDEX USING APIS</div>
+        <div className="text-xl font-bold text-black m-16  ">POKEDEX USING APIS</div>
       </div>
-      {pokemons && pokemons.length > 0 ? (
-        <div className="flex item-row-3 gap-5" >
-          {pokemons.map((pokemon, index) => (
-            <PokeCard key={index} singlePokemon={pokemon} />
+
+      <div className=" mx-16 bg-gray-400 rounded-md ">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 px-5 s ">
+          {pokemons.slice(0, visiblePokemons).map((pokemon, index) => (
+            <PokeCard key={pokemon.name} singlePokemon={pokemon} />
           ))}
         </div>
-      ) : (
-        <div>No Pokémon found</div>
-      )}
+        {visiblePokemons < pokemons.length && (
+          <div className="flex justify-center my-5">
+            <button
+              onClick={showMorePokemons}
+              className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all mb-3"
+            >
+              Load More Pokemon
+            </button>
+          </div>
+        )}
+      </div>
     </>
   );
 }
