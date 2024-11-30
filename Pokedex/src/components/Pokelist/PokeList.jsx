@@ -13,6 +13,8 @@ function PokeList() {
     );
   };
 
+  
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -23,10 +25,6 @@ function PokeList() {
 
   return (
     <>
-      <div className="flex justify-center m-5">
-        <div className="text-xl font-bold text-black m-16  ">POKEDEX USING APIS</div>
-      </div>
-
       <div className=" mx-16 bg-gray-400 rounded-md ">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 px-5 s ">
           {pokemons.slice(0, visiblePokemons).map((pokemon, index) => (

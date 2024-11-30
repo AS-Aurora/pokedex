@@ -81,6 +81,8 @@ function PokeCard({ singlePokemon }) {
           className="h-60 object-contain mx-auto w-9/12/12"
         />
         {/* Pokémon Details */}
+<div className="mb-3">#{details?.id ? details.id.toString().padStart(4, '0') : "#----"}</div>
+
         <div className="flex flex-col items-center sm:items-start ">
           <h1 className="text-lg text-black">
             {singlePokemon.name[0].toUpperCase()+singlePokemon.name.slice(1)}
