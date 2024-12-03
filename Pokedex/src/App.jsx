@@ -8,6 +8,7 @@ import {Routes, Route} from 'react-router-dom'
 import Layout from './Layout'
 
 function App() {
+  
 
   return (
     <>
@@ -16,6 +17,8 @@ function App() {
       </div>
     <Routes>
       <Route path='/all-pokemons' element={<Layout />} >
+      {/* {if()} */}
+        {/* <Route path='/search' element={<SearchBox />} /> */}
       <Route index element={<PokeList />} />
       
       </Route>

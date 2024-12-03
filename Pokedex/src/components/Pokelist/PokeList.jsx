@@ -4,16 +4,7 @@ import { PokedexContext } from "../../context/Context"
 import PokeCard from "./Pokecard/PokeCard"
 
 function PokeList() {
-  const { loading, pokemons } = useContext(PokedexContext)
-  const [visiblePokemons, setVisiblePokemons] = useState(20)
-
-  const showMorePokemons = () => {
-    setVisiblePokemons((prevCount) =>
-      Math.min(prevCount + 20, pokemons.length)
-    )
-  }
-
-  
+  const { loading, pokemons, showMorePokemons, visiblePokemons } = useContext(PokedexContext)  
 
   if (loading) {
     return <div>Loading...</div>

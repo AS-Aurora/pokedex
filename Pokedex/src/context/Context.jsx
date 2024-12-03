@@ -5,6 +5,9 @@ export const PokedexContext = createContext(null);
 function PokedexProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [pokemons, setPokemons] = useState([]);
+  const [visiblePokemons, setVisiblePokemons] = useState(20)
+  
+
 
   async function fetchAPI() {
     setLoading(true);
@@ -29,8 +32,14 @@ function PokedexProvider({ children }) {
     fetchAPI();
   }, []);
 
+  const showMorePokemons = () => {
+    setVisiblePokemons((prevCount) =>
+      Math.min(prevCount + 20, pokemons.length)
+    )
+  }
+
   return (
-    <PokedexContext.Provider value={{ pokemons, loading, fetchPokemonDetails }}>
+    <PokedexContext.Provider value={{ pokemons, loading, fetchPokemonDetails, showMorePokemons, visiblePokemons }}>
       {children}
     </PokedexContext.Provider>
   );
