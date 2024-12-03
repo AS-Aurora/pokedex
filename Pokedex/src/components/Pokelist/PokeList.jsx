@@ -1,33 +1,33 @@
 // PokeList.jsx
-import React, { useState, useContext, useEffect } from "react";
-import { PokedexContext } from "../../context/Context";
-import PokeCard from "./Pokecard/PokeCard";
+import React, { useState, useContext, useEffect } from "react"
+import { PokedexContext } from "../../context/Context"
+import PokeCard from "./Pokecard/PokeCard"
 
 function PokeList() {
-  const { loading, pokemons } = useContext(PokedexContext);
-  const [visiblePokemons, setVisiblePokemons] = useState(20);
+  const { loading, pokemons } = useContext(PokedexContext)
+  const [visiblePokemons, setVisiblePokemons] = useState(20)
 
   const showMorePokemons = () => {
     setVisiblePokemons((prevCount) =>
       Math.min(prevCount + 20, pokemons.length)
-    );
-  };
+    )
+  }
 
   
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   if (!pokemons || pokemons.length === 0) {
-    return <div>No Pokémon found</div>;
+    return <div>No Pokémon found</div>
   }
 
   return (
     <>
       <div className=" mx-16 bg-gray-400 rounded-md ">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 px-5 s ">
-          {pokemons.slice(0, visiblePokemons).map((pokemon, index) => (
+          {pokemons.slice(0, visiblePokemons).map((pokemon) => (
             <PokeCard key={pokemon.name} singlePokemon={pokemon} />
           ))}
         </div>

@@ -3,6 +3,9 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 // import './App.css'
 import PokeList from './components/Pokelist/PokeList'
+import SearchBox from './components/Searchbox/SearchBox'
+import {Routes, Route} from 'react-router-dom'
+import Layout from './Layout'
 
 function App() {
 
@@ -11,7 +14,12 @@ function App() {
     <div className="flex justify-center m-5">
         <div className="text-xl font-bold text-black m-16  ">POKEDEX USING APIS</div>
       </div>
-    <PokeList />
+    <Routes>
+      <Route path='/all-pokemons' element={<Layout />} >
+      <Route index element={<PokeList />} />
+      
+      </Route>
+    </Routes>
     </>
   )
 }
