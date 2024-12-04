@@ -10,7 +10,7 @@
 
 
 :root {
-  font-family: "Press Start 2P", system-ui;
+  font-family: monospace;
   line-height: 1.5;
   font-weight: 400;
 
@@ -35,7 +35,9 @@ html, body {
 
 .grid {
   overflow-x: hidden;
-}   
+}
+
+
 
 /* a {
   font-weight: 500;

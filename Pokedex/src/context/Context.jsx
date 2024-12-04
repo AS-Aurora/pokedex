@@ -17,14 +17,13 @@ function PokedexProvider({ children }) {
     setLoading(false);
   }
 
-  // New function to fetch individual Pokémon details
   async function fetchPokemonDetails(url) {
     try {
       const response = await fetch(url);
       return await response.json();
     } catch (error) {
       console.error('Error fetching Pokémon details:', error);
-      return null; // Fallback in case of error
+      return null;
     }
   }
 

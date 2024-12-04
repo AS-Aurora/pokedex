@@ -1,38 +1,57 @@
-import React, { useEffect, useState, useContext } from "react";
-import { PokedexContext } from "../../context/Context";
-import { BsSearch } from "react-icons/bs";
-import PokeCard from "../Pokelist/Pokecard/PokeCard";
+import React, { useEffect, useState, useContext } from "react"
+import { PokedexContext } from "../../context/Context"
+import { BsSearch } from "react-icons/bs"
+import PokeCard from "../Pokelist/Pokecard/PokeCard"
 
 function SearchBox({ onSearchBarClick }) {
-  const [input, setInput] = useState("");
-  const [search, setSearch] = useState([]);
-  const [isVisible, setIsVisible] = useState(false);
+  const [input, setInput] = useState("")
+  const [search, setSearch] = useState([])
+  const [detailedPokemons, setDetailedPokemons] = useState([])
+  const { pokemons } = useContext(PokedexContext)
 
-  const handleSearchBarClick = () => {
-    setIsVisible(true);
-  };
+  useEffect(() => {
+    async function fetchAllPokemonDetails() {
+      const detailedData = await Promise.all(
+        pokemons.map(async (pokemon) => {
+          const response = await fetch(pokemon.url)
+          const data = await response.json()       
+          return { ...pokemon, id: data.id }
+        })
+      )
+      
+      setDetailedPokemons(detailedData)
+    }
 
-  const { pokemons, showMorePokemons, visiblePokemons } =
-    useContext(PokedexContext);
+    if (pokemons.length > 0) {
+      fetchAllPokemonDetails()
+    }
+  }, [pokemons]);
 
   useEffect(() => {
     function fetchPokeCards(input) {
-      if (!input) {
-        setSearch([]);
+      if (!input.trim()) {
+        setSearch([])
         return;
       }
 
-      const filtered = pokemons.filter((item) =>
-        item.name.toLowerCase().includes(input.toLowerCase())
-      );
-      setSearch(filtered);
+      if (/^\d+$/.test(input)) {
+        const filteredByNumbers = detailedPokemons.filter((item) =>
+          item.id.toString().startsWith(input)
+        );
+        setSearch(filteredByNumbers)
+      } else {
+        const filteredByName = detailedPokemons.filter((item) =>
+          item.name.toLowerCase().startsWith(input.toLowerCase())
+        );
+        setSearch(filteredByName)
+      }
     }
 
-    fetchPokeCards(input);
-  }, [input, pokemons]);
+    fetchPokeCards(input)
+  }, [input, detailedPokemons])
 
   return (
-    <div className="p-4">
+    <div className="px-16 py-4">
       {/* Search Box */}
       <div className="flex items-center gap-2">
         <input
@@ -40,39 +59,26 @@ function SearchBox({ onSearchBarClick }) {
           placeholder="Search Pokémon"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onClick={() => {
-            onSearchBarClick();
-            handleSearchBarClick();
-          }}
-          className="p-2 border border-gray-300 rounded"
+          onClick={onSearchBarClick}
+          className="m-2 p-2 border border-gray-300 rounded w-124"
         />
         <BsSearch className="text-lg" />
       </div>
 
       {/* Pokémon List */}
-      <div className="mx-16 bg-gray-500 rounded-md">
+      <div className="bg-gray-500 rounded-md">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
           {search.length > 0 ? (
-            search.map((pokemon, index) => (
-              <PokeCard key={index} singlePokemon={pokemon} />
+            search.map((pokemon) => (
+              <PokeCard key={pokemon.id} singlePokemon={pokemon} />
             ))
           ) : (
             <p className="text-gray-500 text-center">
-              {!isVisible ? "" : "No Pokémon found"}
+              {input.trim() ? "No Pokémon found" : ""}
             </p>
           )}
         </div>
       </div>
-      {/* {visiblePokemons < pokemons.length && (
-          <div className="flex justify-center my-5">
-            <button
-              onClick={()=>{showMorePokemons(); handleSearchBarClick()}}
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all mb-3"
-            >
-              Load More Pokemon
-            </button>
-          </div>
-        )} */}
     </div>
   );
 }

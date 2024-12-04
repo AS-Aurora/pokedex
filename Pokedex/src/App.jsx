@@ -13,12 +13,13 @@ function App() {
   return (
     <>
     <div className="flex justify-center m-5">
-        <div className="text-xl font-bold text-black m-16  ">POKEDEX USING APIS</div>
+        <div className="text-4xl font-bold text-black m-16  ">
+        Pokédex using APIs</div>
       </div>
     <Routes>
       <Route path='/all-pokemons' element={<Layout />} >
       {/* {if()} */}
-        {/* <Route path='/search' element={<SearchBox />} /> */}
+      {/* <Route path="/search" element={<SearchBox />} /> */}
       <Route index element={<PokeList />} />
       
       </Route>

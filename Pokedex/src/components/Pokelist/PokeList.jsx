@@ -17,7 +17,7 @@ function PokeList() {
   return (
     <>
       <div className=" mx-16 bg-gray-400 rounded-md ">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 px-5 s ">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 p-5">
           {pokemons.slice(0, visiblePokemons).map((pokemon) => (
             <PokeCard key={pokemon.name} singlePokemon={pokemon} />
           ))}
@@ -26,7 +26,7 @@ function PokeList() {
           <div className="flex justify-center my-5">
             <button
               onClick={showMorePokemons}
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all mb-3"
+              className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-all mb-3 text-lg"
             >
               Load More Pokemon
             </button>

@@ -24,7 +24,7 @@ function PokeCard({ singlePokemon }) {
     dark: 'bg-black',
     steel: 'bg-gray-500',
     fairy: 'bg-pink-300',
-    normal: 'bg-gray-300',
+    normal: 'bg-gray-200',
   }
 
   useEffect(() => {
@@ -62,18 +62,19 @@ function PokeCard({ singlePokemon }) {
   }, [details.types])
 
   return (
-    <div className="flex flex-col sm:flex-row items-center bg-gray-200 p-5 m-5 rounded-lg shadow-md hover:scale-105 transition-all">
+    <div className="flex flex-col sm:flex-row items-center bg-gray-300 p-5 m-5 rounded-lg shadow-md hover:scale-105 transition-all">
       <div className="w-full">
         <img
-          src={details.sprites?.front_default}
+          src={details.sprites?.other['official-artwork']?.front_default}
           alt={details?.name || 'Pokemon'}
           className="h-60 object-contain mx-auto w-9/12/12"
         />
-        <div className="mb-3">
-          #{details?.id ? details.id.toString().padStart(4, '0') : '#----'}
+        <div className="mb-3 text-xl text-white">
+        #{details?.id ? (details.id >= 1000 ? details.id : details.id.toString().padStart(4, '0')) : '#----'}
+
         </div>
         <div className="flex flex-col items-center sm:items-start">
-          <h1 className="text-lg text-black">
+          <h1 className="text-3xl text-black">
             {singlePokemon.name[0].toUpperCase() + singlePokemon.name.slice(1)}
           </h1>
           <div className="flex flex-wrap gap-2 mt-2 justify-center sm:justify-start w-full">
@@ -81,17 +82,17 @@ function PokeCard({ singlePokemon }) {
               typesWithSprites.map((type) => (
                 <div
                   key={type.name}
-                  className={`flex items-center space-x-2 mt-2 rounded-lg p-2 h-8 flex-wrap ${
+                  className={`flex items-center space-x-2 mt-2 rounded-lg px-3 h-8 flex-wrap ${
                     typeColors[type.name] || 'bg-gray-400'
                   }`}
                 >
-                  <span className="text-sm font-semibold text-white">
+                  <span className="text-lg font-semibold text-white text-center">
                     {type.name[0].toUpperCase() + type.name.slice(1)}
                   </span>
                 </div>
               ))
             ) : (
-              <p className="text-sm font-semibold text-gray-400 mt-2">No types available</p>
+              <p className="text-lg font-semibold text-gray-400 mt-2">No types available</p>
             )}
           </div>
         </div>
