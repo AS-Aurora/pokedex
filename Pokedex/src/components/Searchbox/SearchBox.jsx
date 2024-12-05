@@ -60,7 +60,7 @@ function SearchBox({ onSearchBarClick }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onClick={onSearchBarClick}
-          className="m-2 p-2 border border-gray-300 rounded w-124"
+          className="m-2 p-2 border border-gray-300 rounded w-124 text-white"
         />
         <BsSearch className="text-lg" />
       </div>

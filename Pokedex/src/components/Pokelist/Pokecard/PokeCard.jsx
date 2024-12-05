@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
 import {PokedexContext} from '../../../context/Context'
+import { useNavigate } from 'react-router-dom'
 
 function PokeCard({ singlePokemon }) {
   const { fetchPokemonDetails } = useContext(PokedexContext)
   const [details, setDetails] = useState({})
   const [typesWithSprites, setTypesWithSprites] = useState([])
+  const navigate = useNavigate()
 
   const typeColors = {
     fire: 'bg-red-500',
@@ -61,8 +63,13 @@ function PokeCard({ singlePokemon }) {
     fetchTypeSprites()
   }, [details.types])
 
+  const handleNavigateToPokeCardContent = () => {
+    navigate(`/all-pokemons/:${details?.id}`)
+  }
+
   return (
-    <div className="flex flex-col sm:flex-row items-center bg-gray-300 p-5 m-5 rounded-lg shadow-md hover:scale-105 transition-all">
+    <div className="flex flex-col sm:flex-row items-center bg-gray-300 p-5 m-5 rounded-lg shadow-md hover:scale-105 transition-all"
+    onClick={handleNavigateToPokeCardContent}>
       <div className="w-full">
         <img
           src={details.sprites?.other['official-artwork']?.front_default}

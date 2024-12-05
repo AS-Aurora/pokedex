@@ -7,14 +7,14 @@ function Layout() {
   const searchRef = useRef(null);
 
   const handleSearchBarClick = () => {
-    console.log("Search bar clicked");
+    // console.log("Search bar clicked");
     setIsVisible(false);
   };
 
   const handleOutsideClick = (e) => {
-    console.log("Clicked outside?", event.target);
+    // console.log("Clicked outside?", e.target);
     if (searchRef.current && !searchRef.current.contains(e.target)) {
-      console.log("Outside click detected");
+      // console.log("Outside click detected");
       setIsVisible(true);
     }
   };

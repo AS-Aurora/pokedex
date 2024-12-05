@@ -13,6 +13,8 @@ function PokedexProvider({ children }) {
     setLoading(true);
     const response = await fetch('https://pokeapi.co/api/v2/pokemon/?limit=3000');
     const result = await response.json();
+    console.log(result);
+    
     setPokemons(result?.results);
     setLoading(false);
   }
