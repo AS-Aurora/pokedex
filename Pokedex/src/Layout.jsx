@@ -5,17 +5,17 @@ import { Outlet } from "react-router-dom";
 function Layout() {
   const [isVisible, setIsVisible] = useState(true);
   const searchRef = useRef(null);
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   const handleSearchBarClick = () => {
-    // console.log("Search bar clicked");
     setIsVisible(false);
+    setIsSearchActive(true);
   };
 
   const handleOutsideClick = (e) => {
-    // console.log("Clicked outside?", e.target);
     if (searchRef.current && !searchRef.current.contains(e.target)) {
-      // console.log("Outside click detected");
       setIsVisible(true);
+      setIsSearchActive(false);
     }
   };
 
@@ -28,8 +28,11 @@ function Layout() {
   }, []);
 
   return (
-    <div ref={searchRef} >
-      <SearchBox onSearchBarClick={handleSearchBarClick} />
+    <div ref={searchRef}>
+      <SearchBox
+        onSearchBarClick={handleSearchBarClick}
+        isSearchActive={isSearchActive}
+      />
       {isVisible && <Outlet />}
     </div>
   );

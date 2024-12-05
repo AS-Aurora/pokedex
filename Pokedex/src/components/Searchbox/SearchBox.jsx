@@ -3,7 +3,7 @@ import { PokedexContext } from "../../context/Context"
 import { BsSearch } from "react-icons/bs"
 import PokeCard from "../Pokelist/Pokecard/PokeCard"
 
-function SearchBox({ onSearchBarClick }) {
+function SearchBox({ onSearchBarClick, isSearchActive }) {
   const [input, setInput] = useState("")
   const [search, setSearch] = useState([])
   const [detailedPokemons, setDetailedPokemons] = useState([])
@@ -50,6 +50,13 @@ function SearchBox({ onSearchBarClick }) {
     fetchPokeCards(input)
   }, [input, detailedPokemons])
 
+  useEffect(() => {
+    if (!isSearchActive) {
+      // setInput("");
+      setSearch([]);
+    }
+  }, [isSearchActive]);
+
   return (
     <div className="px-16 py-4">
       {/* Search Box */}
@@ -66,6 +73,7 @@ function SearchBox({ onSearchBarClick }) {
       </div>
 
       {/* Pokémon List */}
+      {isSearchActive && search.length > 0 && (
       <div className="bg-gray-500 rounded-md">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
           {search.length > 0 ? (
@@ -79,6 +87,7 @@ function SearchBox({ onSearchBarClick }) {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }
