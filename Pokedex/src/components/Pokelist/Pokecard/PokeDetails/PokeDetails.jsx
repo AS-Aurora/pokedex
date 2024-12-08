@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useMemo } from "react";
 import { PokedexContext } from "../../../../context/Context";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { BsQuestion } from "react-icons/bs";
 
 function PokeDetails() {
@@ -10,29 +10,33 @@ function PokeDetails() {
   const [details, setDetails] = useState(null);
   const [abilitiesDes, setAbilitiesDes] = useState([]);
   const [showAbilities, setShowAbilities] = useState(false);
-  const [evolutions, setEvolutions] = useState([]);
+  const [evolutions, setEvolutions] = useState([]); 
+  const [varieties, setVarieties] = useState([]);
+  const navigate = useNavigate();
 
   const typeColors = useMemo(
     () => ({
-    fire: "bg-red-500",
-    water: "bg-blue-500",
-    grass: "bg-green-500",
-    electric: "bg-yellow-500",
-    ice: "bg-cyan-400",
-    fighting: "bg-orange-600",
-    poison: "bg-purple-500",
-    ground: "bg-yellow-700",
-    flying: "bg-indigo-300",
-    psychic: "bg-pink-400",
-    bug: "bg-lime-600",
-    rock: "bg-gray-700",
-    ghost: "bg-indigo-600",
-    dragon: "bg-indigo-800",
-    dark: "bg-black",
-    steel: "bg-gray-500",
-    fairy: "bg-pink-300",
-    normal: "bg-gray-200",
-  }), [])
+      fire: "bg-red-500",
+      water: "bg-blue-500",
+      grass: "bg-green-500",
+      electric: "bg-yellow-500",
+      ice: "bg-cyan-400",
+      fighting: "bg-orange-600",
+      poison: "bg-purple-500",
+      ground: "bg-yellow-700",
+      flying: "bg-indigo-300",
+      psychic: "bg-pink-400",
+      bug: "bg-lime-600",
+      rock: "bg-gray-700",
+      ghost: "bg-indigo-600",
+      dragon: "bg-indigo-800",
+      dark: "bg-black",
+      steel: "bg-gray-500",
+      fairy: "bg-pink-300",
+      normal: "bg-gray-200",
+    }),
+    []
+  );
 
   useEffect(() => {
     async function fetchDetails() {
@@ -43,6 +47,12 @@ function PokeDetails() {
 
         const speciesResponse = await fetch(data.species.url);
         const speciesData = await speciesResponse.json();
+
+        const originalPokemon = {
+          pokemon: { name: data.name },
+          is_default: true,
+        };
+
         setDetails({
           ...data,
           description:
@@ -50,6 +60,11 @@ function PokeDetails() {
               (entry) => entry.language.name === "en"
             )?.flavor_text || "No description available.",
         });
+
+        const filteredVarieties = speciesData.varieties.filter(
+          (variety) => variety.pokemon.name !== data.name
+        );
+        setVarieties([originalPokemon, ...filteredVarieties]);
 
         const evolutionResponse = await fetch(speciesData.evolution_chain.url);
         const evolutionData = await evolutionResponse.json();
@@ -110,13 +125,26 @@ function PokeDetails() {
     fetchAbilities();
   }, [details?.abilities]);
 
+  const handleVarietyChange = (e) => {
+    const selectedVarietyName = e.target.value;
+    if (selectedVarietyName) {
+      navigate(`/all-pokemons/${selectedVarietyName}`);
+    }
+  };
+
   if (loading || !details) {
     return <div className="text-center mt-10">Loading...</div>;
   }
-  
+
   if (!details) {
-    return <div className="text-center text-red-500">Could not load Pokémon details. Please try again.</div>;
+    return (
+      <div className="text-center text-red-500">
+        Could not load Pokémon details. Please try again.
+      </div>
+    );
   }
+
+  console.log(varieties);
 
   const { name, sprites, stats, height, weight, types, description } = details;
 
@@ -125,6 +153,26 @@ function PokeDetails() {
       <div className="flex justify-center items-center gap-3">
         <h1 className="text-4xl capitalize">{name}</h1>
       </div>
+
+      {/* Dropdown for Varieties */}
+      {varieties.length > 1 && (
+        <div className="mb-6">
+          <select
+            id="varieties"
+            className="w-full p-2 border border-gray-300 rounded text-white"
+            onChange={handleVarietyChange}
+            value={details?.name}
+          >
+            {varieties.map((variety) => (
+              <option key={variety.pokemon.name} value={variety.pokemon.name}>
+                {variety.pokemon.name[0].toUpperCase() +
+                  variety.pokemon.name.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <p className="text-gray-500 text-center mb-5">
         #
         {details?.id
@@ -251,8 +299,7 @@ function PokeDetails() {
                 #{evolution.id.toString().padStart(4, "0")}
               </p>
             </Link>
-          )
-          )}
+          ))}
         </div>
       </div>
     </div>
