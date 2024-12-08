@@ -1,36 +1,40 @@
-import React, { useEffect, useState, useContext } from "react"
-import { PokedexContext } from "../../context/Context"
-import { BsSearch } from "react-icons/bs"
-import PokeCard from "../Pokelist/Pokecard/PokeCard"
+import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { PokedexContext } from "../../context/Context";
+import { BsSearch } from "react-icons/bs";
+import { IoClose } from "react-icons/io5";
+import PokeCard from "../Pokelist/Pokecard/PokeCard";
 
-function SearchBox({ onSearchBarClick, isSearchActive }) {
-  const [input, setInput] = useState("")
-  const [search, setSearch] = useState([])
-  const [detailedPokemons, setDetailedPokemons] = useState([])
-  const { pokemons } = useContext(PokedexContext)
+function SearchBox({ setShowPokelist }) {
+  const [input, setInput] = useState("");
+  const [search, setSearch] = useState([]);
+  const [detailedPokemons, setDetailedPokemons] = useState([]);
+  const { pokemons } = useContext(PokedexContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchAllPokemonDetails() {
       const detailedData = await Promise.all(
         pokemons.map(async (pokemon) => {
-          const response = await fetch(pokemon.url)
-          const data = await response.json()       
-          return { ...pokemon, id: data.id }
+          const response = await fetch(pokemon.url);
+          const data = await response.json();
+          return { ...pokemon, id: data.id };
         })
-      )
-      
-      setDetailedPokemons(detailedData)
+      );
+
+      setDetailedPokemons(detailedData);
     }
 
     if (pokemons.length > 0) {
-      fetchAllPokemonDetails()
+      fetchAllPokemonDetails();
     }
   }, [pokemons]);
 
   useEffect(() => {
     function fetchPokeCards(input) {
       if (!input.trim()) {
-        setSearch([])
+        setSearch([]);
+        setShowPokelist(true);
         return;
       }
 
@@ -38,24 +42,32 @@ function SearchBox({ onSearchBarClick, isSearchActive }) {
         const filteredByNumbers = detailedPokemons.filter((item) =>
           item.id.toString().startsWith(input)
         );
-        setSearch(filteredByNumbers)
+        setSearch(filteredByNumbers);
+        setShowPokelist(false);
       } else {
         const filteredByName = detailedPokemons.filter((item) =>
           item.name.toLowerCase().startsWith(input.toLowerCase())
         );
-        setSearch(filteredByName)
+        setSearch(filteredByName);
+        setShowPokelist(false);
       }
     }
 
-    fetchPokeCards(input)
-  }, [input, detailedPokemons])
+    fetchPokeCards(input);
+  }, [input, detailedPokemons, setShowPokelist]);
 
-  useEffect(() => {
-    if (!isSearchActive) {
-      // setInput("");
-      setSearch([]);
-    }
-  }, [isSearchActive]);
+  const handleCardClick = (id) => {
+    navigate(`/all-pokemons/${id}`);
+    setInput("");
+    setSearch([]);
+    setShowPokelist(true);
+  };
+
+  const resetSearch = () => {
+    setInput("");
+    setSearch([]);
+    setShowPokelist(true);
+  };
 
   return (
     <div className="px-16 py-4">
@@ -66,27 +78,30 @@ function SearchBox({ onSearchBarClick, isSearchActive }) {
           placeholder="Search Pokémon"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onClick={onSearchBarClick}
           className="m-2 p-2 border border-gray-300 rounded w-124 text-white"
         />
+        {input && (
+          <IoClose
+            className="text-lg cursor-pointer"
+            onClick={resetSearch}
+          />
+        )}
         <BsSearch className="text-lg" />
       </div>
 
       {/* Pokémon List */}
-      {isSearchActive && search.length > 0 && (
-      <div className="bg-gray-500 rounded-md">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-          {search.length > 0 ? (
-            search.map((pokemon) => (
-              <PokeCard key={pokemon.id} singlePokemon={pokemon} />
-            ))
-          ) : (
-            <p className="text-gray-500 text-center">
-              {input.trim() ? "No Pokémon found" : ""}
-            </p>
-          )}
+      {input && search.length > 0 && (
+        <div className="bg-gray-500 rounded-md max-h-100 overflow-y-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+            {search.map((pokemon) => (
+              <PokeCard
+                key={pokemon.id}
+                singlePokemon={pokemon}
+                onClick={() => handleCardClick(pokemon.id)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
       )}
     </div>
   );

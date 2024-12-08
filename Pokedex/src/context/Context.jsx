@@ -1,46 +1,60 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from "react";
 
 export const PokedexContext = createContext(null);
 
 function PokedexProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [pokemons, setPokemons] = useState([]);
-  const [visiblePokemons, setVisiblePokemons] = useState(20)
-  
+  const [visiblePokemons, setVisiblePokemons] = useState(20);
 
-
-  async function fetchAPI() {
+  const fetchAPI = async () => {
     setLoading(true);
-    const response = await fetch('https://pokeapi.co/api/v2/pokemon/?limit=3000');
-    const result = await response.json();
-    console.log(result);
-    
-    setPokemons(result?.results);
-    setLoading(false);
-  }
+    try {
+      const response = await fetch("https://pokeapi.co/api/v2/pokemon/?limit=3000");
+      const result = await response.json();
+      if (response.ok) {
+        setPokemons(result?.results || []);
+      } else {
+        console.error("Failed to fetch Pokémon list:", result);
+      }
+    } catch (error) {
+      console.error("Error fetching Pokémon list:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  async function fetchPokemonDetails(url) {
+  const fetchPokemonDetails = async (url) => {
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       return await response.json();
     } catch (error) {
-      console.error('Error fetching Pokémon details:', error);
+      console.error("Error fetching Pokémon details:", error);
       return null;
     }
-  }
+  };
+
+  const showMorePokemons = () => {
+    setVisiblePokemons((prevCount) => Math.min(prevCount + 20, pokemons.length));
+  };
 
   useEffect(() => {
     fetchAPI();
   }, []);
 
-  const showMorePokemons = () => {
-    setVisiblePokemons((prevCount) =>
-      Math.min(prevCount + 20, pokemons.length)
-    )
-  }
-
   return (
-    <PokedexContext.Provider value={{ pokemons, loading, fetchPokemonDetails, showMorePokemons, visiblePokemons }}>
+    <PokedexContext.Provider
+      value={{
+        pokemons,
+        loading,
+        fetchPokemonDetails,
+        showMorePokemons,
+        visiblePokemons,
+      }}
+    >
       {children}
     </PokedexContext.Provider>
   );

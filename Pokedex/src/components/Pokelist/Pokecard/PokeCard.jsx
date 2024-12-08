@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useMemo } from 'react'
 import {PokedexContext} from '../../../context/Context'
 import { useNavigate } from 'react-router-dom'
 
-function PokeCard({ singlePokemon }) {
+function PokeCard({ singlePokemon, onClick }) {
   const { fetchPokemonDetails } = useContext(PokedexContext)
   const [details, setDetails] = useState({})
   const [typesWithSprites, setTypesWithSprites] = useState([])
   const navigate = useNavigate()
 
-  const typeColors = {
+  const typeColors = useMemo(
+    () => ({
     fire: 'bg-red-500',
     water: 'bg-blue-500',
     grass: 'bg-green-500',
@@ -27,9 +28,10 @@ function PokeCard({ singlePokemon }) {
     steel: 'bg-gray-500',
     fairy: 'bg-pink-300',
     normal: 'bg-gray-200',
-  }
+  }), [])
 
   useEffect(() => {
+
     async function fetchDetails() {
       const data = await fetchPokemonDetails(singlePokemon.url)
       setDetails(data)
@@ -39,6 +41,7 @@ function PokeCard({ singlePokemon }) {
   }, [singlePokemon.url, fetchPokemonDetails])
 
   useEffect(() => {
+    if (!details.types || typesWithSprites.length > 0) return;
     async function fetchTypeSprites() {
       if (details.types && details.types.length > 0) {
         const typePromises = details.types.map(async (typeInfo) => {
@@ -64,12 +67,18 @@ function PokeCard({ singlePokemon }) {
   }, [details.types])
 
   const handleNavigateToPokeCardContent = () => {
-    navigate(`/all-pokemons/:${details?.id}`)
+    if (details?.id) {
+      navigate(`/all-pokemons/${details.id}`);
+    }
+  };
+
+  if (!details || Object.keys(details).length === 0) {
+    return <div className="text-gray-500">Loading details...</div>;
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center bg-gray-300 p-5 m-5 rounded-lg shadow-md hover:scale-105 transition-all"
-    onClick={handleNavigateToPokeCardContent}>
+    <div className="flex flex-col items-center bg-gray-300 p-5 m-5 rounded-lg shadow-md hover:scale-105 transition-alll"
+    onClick={() => (handleNavigateToPokeCardContent(), onclick)}>
       <div className="w-full">
         <img
           src={details.sprites?.other['official-artwork']?.front_default}

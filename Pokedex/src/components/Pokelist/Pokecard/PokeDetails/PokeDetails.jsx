@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import { PokedexContext } from "../../../../context/Context";
 import { useParams, Link } from "react-router-dom";
 import { BsQuestion } from "react-icons/bs";
@@ -12,7 +12,8 @@ function PokeDetails() {
   const [showAbilities, setShowAbilities] = useState(false);
   const [evolutions, setEvolutions] = useState([]);
 
-  const typeColors = {
+  const typeColors = useMemo(
+    () => ({
     fire: "bg-red-500",
     water: "bg-blue-500",
     grass: "bg-green-500",
@@ -31,7 +32,7 @@ function PokeDetails() {
     steel: "bg-gray-500",
     fairy: "bg-pink-300",
     normal: "bg-gray-200",
-  };
+  }), [])
 
   useEffect(() => {
     async function fetchDetails() {
@@ -112,6 +113,10 @@ function PokeDetails() {
   if (loading || !details) {
     return <div className="text-center mt-10">Loading...</div>;
   }
+  
+  if (!details) {
+    return <div className="text-center text-red-500">Could not load Pokémon details. Please try again.</div>;
+  }
 
   const { name, sprites, stats, height, weight, types, description } = details;
 
@@ -133,7 +138,7 @@ function PokeDetails() {
         <img
           src={sprites?.other["official-artwork"]?.front_default}
           alt={name}
-          className="sm:w-11/12 sm:h-11/12 w-full h-full rounded-md bg-gray-300"
+          className="sm:w-11/12 sm:h-11/12 w-full h-auto rounded-md bg-gray-300"
         />
         <div>
           {/* Pokemon Description */}
@@ -233,7 +238,7 @@ function PokeDetails() {
           {evolutions.map((evolution) => (
             <Link
               key={evolution.id}
-              to={`/all-pokemons/${evolution.id}`}
+              to={`/all-pokemons/:${evolution.id}`}
               className="flex flex-col items-center px-16 py-10 bg-gray-200 rounded-full"
             >
               <img
