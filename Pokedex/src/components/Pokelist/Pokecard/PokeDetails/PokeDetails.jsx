@@ -6,11 +6,12 @@ import { BsQuestion } from "react-icons/bs";
 function PokeDetails() {
   const { id } = useParams();
   const cleanedId = id.replace(":", "");
+  const numberId = parseInt(id.replace(":", ""), 10);
   const { loading } = useContext(PokedexContext);
   const [details, setDetails] = useState(null);
   const [abilitiesDes, setAbilitiesDes] = useState([]);
   const [showAbilities, setShowAbilities] = useState(false);
-  const [evolutions, setEvolutions] = useState([]); 
+  const [evolutions, setEvolutions] = useState([]);
   const [varieties, setVarieties] = useState([]);
   const navigate = useNavigate();
 
@@ -49,7 +50,7 @@ function PokeDetails() {
         const speciesData = await speciesResponse.json();
 
         const originalPokemon = {
-          pokemon: { name: data.name },
+          pokemon: { name: data.name, id: data.id},
           is_default: true,
         };
 
@@ -125,12 +126,30 @@ function PokeDetails() {
     fetchAbilities();
   }, [details?.abilities]);
 
-  const handleVarietyChange = (e) => {
+  const handleVarietyChange = async (e) => {
     const selectedVarietyName = e.target.value;
     if (selectedVarietyName) {
-      navigate(`/all-pokemons/${selectedVarietyName}`);
+      try {
+        const apiUrl = `https://pokeapi.co/api/v2/pokemon/${selectedVarietyName}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+  
+        const speciesResponse = await fetch(data.species.url);
+        const speciesData = await speciesResponse.json();
+  
+        setDetails({
+          ...data,
+          description:
+            speciesData.flavor_text_entries.find(
+              (entry) => entry.language.name === "en"
+            )?.flavor_text || "No description available.",
+        });
+      } catch (error) {
+        console.error("Error fetching variety details:", error);
+      }
     }
   };
+  
 
   if (loading || !details) {
     return <div className="text-center mt-10">Loading...</div>;
@@ -150,7 +169,28 @@ function PokeDetails() {
 
   return (
     <div className="p-8 max-w-4xl mx-auto bg-white shadow-lg rounded-lg">
-      <div className="flex justify-center items-center gap-3">
+      <div className="flex justify-between gap-5 my-5 text-white">
+        <div
+          className={`font-semibold bg-cyan-400 p-3 w-6/12 text-center rounded-l-xl hover:scale-105 transition-all ${
+            numberId === 1 ? "opacity-50 pointer-events-none" : ""
+          }`}
+          onClick={() => numberId>0?navigate(`/all-pokemons/:${Number(numberId) - 1}`):null}
+          disabled={numberId<=0}
+        >
+          Prev
+        </div>
+        <div
+          className={`font-semibold bg-cyan-400 p-3 w-6/12 text-center rounded-r-xl hover:scale-105 transition-all ${
+            numberId === 3000 ? "opacity-50 pointer-events-none" : ""
+          }`}
+          onClick={() => numberId?navigate(`/all-pokemons/:${Number(numberId) + 1}`):null}
+          disabled={numberId<=3000}
+        >
+          Next
+        </div>
+      </div>
+
+      <div className="flex justify-center items-center gap-3 my-5">
         <h1 className="text-4xl capitalize">{name}</h1>
       </div>
 
