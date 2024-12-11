@@ -95,7 +95,7 @@ function SearchBox({ setShowPokelist }) {
 
       {/* Pokémon List */}
       {input && (
-        <div className="bg-gray-100 rounded-md max-h-96 overflow-y-auto mt-4">
+        <div className="bg-gray-100 rounded-md mt-4">
           {search.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
               {search.map((pokemon) => (
