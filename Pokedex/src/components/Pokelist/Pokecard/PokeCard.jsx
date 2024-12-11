@@ -1,70 +1,73 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react'
-import {PokedexContext} from '../../../context/Context'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect, useContext, useMemo } from 'react';
+import { PokedexContext } from '../../../context/Context';
+import { useNavigate } from 'react-router-dom';
 
-function PokeCard({ singlePokemon, onClick }) {
-  const { fetchPokemonDetails } = useContext(PokedexContext)
-  const [details, setDetails] = useState({})
-  const [typesWithSprites, setTypesWithSprites] = useState([])
-  const navigate = useNavigate()
+function PokeCard({ singlePokemon }) {
+  const { fetchPokemonDetails } = useContext(PokedexContext);
+  const [details, setDetails] = useState({});
+  const [typesWithSprites, setTypesWithSprites] = useState([]);
+  const navigate = useNavigate();
 
   const typeColors = useMemo(
     () => ({
-    fire: 'bg-red-500',
-    water: 'bg-blue-500',
-    grass: 'bg-green-500',
-    electric: 'bg-yellow-500',
-    ice: 'bg-cyan-400',
-    fighting: 'bg-orange-600',
-    poison: 'bg-purple-500',
-    ground: 'bg-yellow-700',
-    flying: 'bg-indigo-300',
-    psychic: 'bg-pink-400',
-    bug: 'bg-lime-600',
-    rock: 'bg-gray-700',
-    ghost: 'bg-indigo-600',
-    dragon: 'bg-indigo-800',
-    dark: 'bg-black',
-    steel: 'bg-gray-500',
-    fairy: 'bg-pink-300',
-    normal: 'bg-gray-200',
-  }), [])
+      fire: 'bg-red-500',
+      water: 'bg-blue-500',
+      grass: 'bg-green-500',
+      electric: 'bg-yellow-500',
+      ice: 'bg-cyan-400',
+      fighting: 'bg-orange-600',
+      poison: 'bg-purple-500',
+      ground: 'bg-yellow-700',
+      flying: 'bg-indigo-300',
+      psychic: 'bg-pink-400',
+      bug: 'bg-lime-600',
+      rock: 'bg-gray-700',
+      ghost: 'bg-indigo-600',
+      dragon: 'bg-indigo-800',
+      dark: 'bg-black',
+      steel: 'bg-gray-500',
+      fairy: 'bg-pink-300',
+      normal: 'bg-gray-200',
+    }),
+    []
+  );
 
   useEffect(() => {
-
     async function fetchDetails() {
-      const data = await fetchPokemonDetails(singlePokemon.url)
-      setDetails(data)
-    }
-
-    fetchDetails();
-  }, [singlePokemon.url, fetchPokemonDetails])
-
-  useEffect(() => {
-    if (!details.types || typesWithSprites.length > 0) return;
-    async function fetchTypeSprites() {
-      if (details.types && details.types.length > 0) {
-        const typePromises = details.types.map(async (typeInfo) => {
-          try {
-            const response = await fetch(typeInfo.type.url)
-            const typeData = await response.json()
-            return {
-              name: typeInfo.type.name,
-              sprite: typeData.sprites?.['generation-viii']?.['sword-shield'],
-            }
-          } catch (error) {
-            console.error(`Error fetching type details for ${typeInfo.type.name}:`, error)
-            return { name: typeInfo.type.name, sprite: null }
-          }
-        })
-
-        const fetchedTypes = await Promise.all(typePromises)
-        setTypesWithSprites(fetchedTypes.filter(Boolean))
+      try {
+        const data = await fetchPokemonDetails(singlePokemon.url);
+        setDetails(data);
+      } catch (error) {
+        console.error('Error fetching Pokémon details:', error);
       }
     }
 
-    fetchTypeSprites()
-  }, [details.types])
+    fetchDetails();
+  }, [singlePokemon.url, fetchPokemonDetails]);
+
+  useEffect(() => {
+    async function fetchTypeSprites() {
+      if (!details.types) return;
+
+      try {
+        const typePromises = details.types.map(async (typeInfo) => {
+          const response = await fetch(typeInfo.type.url);
+          const typeData = await response.json();
+          return {
+            name: typeInfo.type.name,
+            sprite: typeData.sprites?.['generation-viii']?.['sword-shield'] || null,
+          };
+        });
+
+        const fetchedTypes = await Promise.all(typePromises);
+        setTypesWithSprites(fetchedTypes);
+      } catch (error) {
+        console.error('Error fetching type sprites:', error);
+      }
+    }
+
+    fetchTypeSprites();
+  }, [details.types]);
 
   const handleNavigateToPokeCardContent = () => {
     if (details?.id) {
@@ -77,21 +80,29 @@ function PokeCard({ singlePokemon, onClick }) {
   }
 
   return (
-    <div className="flex flex-col items-center bg-gray-300 p-5 m-5 rounded-lg shadow-md hover:scale-105 transition-alll"
-    onClick={() => (handleNavigateToPokeCardContent(), onclick)}>
+    <div
+      className="flex flex-col items-center bg-gray-300 p-5 m-5 rounded-lg shadow-md hover:scale-105 transition-all"
+      onClick={handleNavigateToPokeCardContent}
+      tabIndex="0"
+      role="button"
+    >
       <div className="w-full">
         <img
-          src={details.sprites?.other['official-artwork']?.front_default}
+          src={
+            details.sprites?.other['official-artwork']?.front_default ||
+            '/placeholder.png'
+          }
           alt={details?.name || 'Pokemon'}
-          className="h-60 object-contain mx-auto w-9/12/12"
+          className="h-60 object-contain mx-auto w-9/12"
         />
         <div className="mb-3 text-xl text-white">
-        #{details?.id ? (details.id >= 1000 ? details.id : details.id.toString().padStart(4, '0')) : '#----'}
-
+          #{details?.id
+            ? details.id.toString().padStart(4, '0')
+            : '----'}
         </div>
         <div className="flex flex-col items-center sm:items-start">
           <h1 className="text-3xl text-black">
-            {singlePokemon.name[0].toUpperCase() + singlePokemon.name.slice(1)}
+            {singlePokemon.name.charAt(0).toUpperCase() + singlePokemon.name.slice(1)}
           </h1>
           <div className="flex flex-wrap gap-2 mt-2 justify-center sm:justify-start w-full">
             {typesWithSprites.length > 0 ? (
@@ -103,7 +114,7 @@ function PokeCard({ singlePokemon, onClick }) {
                   }`}
                 >
                   <span className="text-lg font-semibold text-white text-center">
-                    {type.name[0].toUpperCase() + type.name.slice(1)}
+                    {type.name.charAt(0).toUpperCase() + type.name.slice(1)}
                   </span>
                 </div>
               ))

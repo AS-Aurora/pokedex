@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect, useMemo } from "react";
 import { PokedexContext } from "../../../../context/Context";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { BsQuestion } from "react-icons/bs";
+import {UseFavourites} from '../../../../hooks/UseFavourites'
+import {AuthContext} from '../../../../context/AuthContext'
 
 function PokeDetails() {
   const { id } = useParams();
@@ -13,6 +15,8 @@ function PokeDetails() {
   const [showAbilities, setShowAbilities] = useState(false);
   const [evolutions, setEvolutions] = useState([]);
   const [varieties, setVarieties] = useState([]);
+  const {addToFavorites} = UseFavourites()
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const typeColors = useMemo(
@@ -149,6 +153,15 @@ function PokeDetails() {
       }
     }
   };
+
+  const handleAddToFavorites = () => {
+    if (!user) {
+      alert("Please log in to add to favorites.");
+      return;
+    }
+  
+    addToFavorites({ id: details.id, name: details.name });
+  };
   
 
   if (loading || !details) {
@@ -169,9 +182,9 @@ function PokeDetails() {
 
   return (
     <div className="p-8 max-w-4xl mx-auto bg-white shadow-lg rounded-lg">
-      <div className="flex justify-between gap-5 my-5 text-white">
+      <div className="flex justify-between gap-5 my-5 text-white text-lg">
         <div
-          className={`font-semibold bg-cyan-400 p-3 w-6/12 text-center rounded-l-xl hover:scale-105 transition-all ${
+          className={`font-semibold bg-cyan-500 p-3 w-6/12 text-center rounded-l-xl hover:scale-105 transition-all ${
             numberId === 1 ? "opacity-50 pointer-events-none" : ""
           }`}
           onClick={() => numberId>0?navigate(`/all-pokemons/:${Number(numberId) - 1}`):null}
@@ -180,7 +193,7 @@ function PokeDetails() {
           Prev
         </div>
         <div
-          className={`font-semibold bg-cyan-400 p-3 w-6/12 text-center rounded-r-xl hover:scale-105 transition-all ${
+          className={`font-semibold bg-cyan-500 p-3 w-6/12 text-center rounded-r-xl hover:scale-105 transition-all ${
             numberId === 3000 ? "opacity-50 pointer-events-none" : ""
           }`}
           onClick={() => numberId?navigate(`/all-pokemons/:${Number(numberId) + 1}`):null}
@@ -342,6 +355,13 @@ function PokeDetails() {
           ))}
         </div>
       </div>
+
+      <button
+        onClick={handleAddToFavorites}
+        className="mt-4 p-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+      >
+        Add to Favorites
+      </button>
     </div>
   );
 }
